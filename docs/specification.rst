@@ -14,10 +14,11 @@ Specification of CamPipe
    * - Owner
      - NeoCam integration
    * - Status
-     - Reference for the selected NeoCam release
-   * - Selected ref
+     - Development source with the configured EbOs camera-worker pilot.
+       A product's manifest selects its consumed revision.
+   * - Earlier baseline ref
      - ``campipe/1.0.0@neotech/prototype``
-   * - Source commit
+   * - Earlier baseline commit
      - `17346bb3ebf390bbd8481c2935d1336cc9e582cb <https://github.com/NeoTech-vietnam/CamPipe/tree/17346bb3ebf390bbd8481c2935d1336cc9e582cb>`__
 
 .. list-table:: Document change history
@@ -38,6 +39,13 @@ Specification of CamPipe
 --------------------------------------
 
 CamPipe owns preview publication, profile transitions and still-photo capture sequencing. Its single producer acquires through CamIo and hands clients leases on immutable JPEG payloads.
+
+The development implementation consumes a project-supplied ``CamPipe_TaskConfig``
+from ``Conf/EbOs``. EbOs manages the native task through an opaque handle. Project
+task-entry wiring calls ``CamPipe_ProducerStep``; CamPipe retains its cooperative
+stop request, camera operations and public data-path interfaces. A stop timeout
+keeps the task and dependent resources alive for retry. Stack sampling is
+serialized with task creation and retirement.
 
 2 Acronyms and abbreviations
 ----------------------------
@@ -378,7 +386,8 @@ Service definitions
    * - Field
      - Value
    * - Owner
-     - ``Conf/CamPipe/CamPipe_Cfg.h``
+     - ``Conf/CamPipe/CamPipe_Cfg.h`` for pipeline policy;
+       ``Conf/EbOs/EbOs_Cfg.h`` and ``EbOs_Cfg.c`` for task policy and wiring.
    * - Type
      - C preprocessor constants
    * - Default
